@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migrate-once
+spec:
+  template:
+    spec:
+      containers:
+      - name: django-migrate-once
+        image: myapp:latest
+        imagePullPolicy: Never
+        envFrom:
+          - configMapRef:
+              name: env-vars
+          - secretRef:
+              name: env-secrets
+        command: ['python', 'manage.py', 'migrate', '--noinput']
+      restartPolicy: Never
+  backoffLimit: 3

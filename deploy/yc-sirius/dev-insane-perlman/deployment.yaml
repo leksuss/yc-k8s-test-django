@@ -17,6 +17,15 @@ spec:
     spec:
       containers:
       - name: project
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
+        image: ubuntu:latest
+        command: ["/bin/bash", "-c"]
+        args: ["while true; do sleep 30; done;"]
+        volumeMounts:
+        - name: foo
+          mountPath: "/root/.postgresql"
+          readOnly: true
+      volumes:
+      - name: foo
+        secret:
+          secretName: yandex-root-cert
+          optional: true

@@ -1,31 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: project-deployment
+  name: django-site-deployment
   labels:
-    app: project
+    app: django-site
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: project
+      app: django-site
   template:
     metadata:
       labels:
-        app: project
+        app: django-site
       namespace: edu-insane-perlman
     spec:
       containers:
-      - name: project
-        image: ubuntu:latest
-        command: ["/bin/bash", "-c"]
-        args: ["while true; do sleep 30; done;"]
+      - name: django-site
+        image: leksuss/django-site:latest
+        envFrom:
+        - secretRef:
+            name: secrets
         volumeMounts:
-        - name: foo
-          mountPath: "/root/.postgresql"
+        - name: yandex-root-cert
+          mountPath: "/opt/.postgresql"
           readOnly: true
       volumes:
-      - name: foo
+      - name: yandex-root-cert
         secret:
           secretName: yandex-root-cert
-          optional: true
+          optional: false
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-site-service
+  namespace: edu-insane-perlman
+spec:
+  selector:
+    app: django-site
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30421
+  type: NodePort

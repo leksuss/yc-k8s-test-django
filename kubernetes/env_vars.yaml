@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: env-vars
-data:
-  DEBUG: !!Bool False
-  ALLOWED_HOSTS: '127.0.0.1,localhost,star-burger.test'

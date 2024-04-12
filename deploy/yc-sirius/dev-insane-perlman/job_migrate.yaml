@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migrate-once
+spec:
+  template:
+    spec:
+      containers:
+      - name: django-migrate-once
+        image: leksuss/django-site:latest
+        envFrom:
+          - secretRef:
+              name: secrets
+        volumeMounts:
+        - name: yandex-root-cert
+          mountPath: "/opt/.postgresql"
+          readOnly: true
+        command: ['python', 'manage.py', 'migrate', '--noinput']
+      restartPolicy: Never
+
+      volumes:
+      - name: yandex-root-cert
+        secret:
+          secretName: yandex-root-cert
+          optional: false
+
+  backoffLimit: 3
